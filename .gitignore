@@ -1,3 +1,5 @@
 # CLion
 .idea/**
+build/**
+cmake-build-release/**
 cmake-build-debug/**
