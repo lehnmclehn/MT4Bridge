@@ -21,16 +21,20 @@ class AMQPConnection {
 private:
     const char *hostname = "localhost";
     const int port = 5672;
-    const char *exchange = "alex_ex";
-    const char *bindingkey = "alex_key";
-    const char *queue = "alex_queue";
+
+    // empty exchange means the AMQP default exchange (bindingKey ist the corresponding queue)
+    const char *exchange = "";
+
+    // defaults to the sending queue
+    const char *bindingkey = "BAR";
+
+    // queue where we get our commands
+    const char *listenQueue = "CMD";
 
     amqp_socket_t *socket = NULL;
     amqp_connection_state_t conn;
 
     std::thread *myThread = NULL;
-
-    int bind();
 public:
     /*
      * initializes the connection to AMQP server

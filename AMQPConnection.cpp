@@ -64,22 +64,6 @@ void AMQPConnection::send(const TDHTransferHeader msg) {
     }
 }
 
-int AMQPConnection::bind() {
-
-
-    /** BINDING
-    amqp_queue_bind(conn, 1, amqp_cstring_bytes(queue),
-                    amqp_cstring_bytes(exchange), amqp_cstring_bytes(bindingkey),
-                    amqp_empty_table);
-    die_on_amqp_error(amqp_get_rpc_reply(conn), "Unbinding");
-**/
-
-
-
-    return 0;
-}
-
-
 void AMQPConnection::deinit() {
     /* close channel + connection */
     die_on_amqp_error(amqp_channel_close(conn, 1, AMQP_REPLY_SUCCESS),
@@ -154,7 +138,7 @@ bool AMQPConnection::getMessage(TDHTransferHeader *msg) {
 
 void AMQPConnection::startListen() {
 
-    myThread = new std::thread(receiveLoop, conn, queue);
+    myThread = new std::thread(receiveLoop, conn, listenQueue);
 }
 
 void AMQPConnection::stopListen() {
