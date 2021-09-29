@@ -3,6 +3,18 @@
 
 #define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
 
+
+/*
+ *  Command structure sent from THD --> MT4
+ */
+typedef struct {
+    long time;
+    char action[32];
+    char tradeable[32];
+    char msg[256];
+} TDHCmd;
+
+
 /*
  * initializes the AMQP Library
  */
@@ -21,26 +33,11 @@ EXTERN_DLL_EXPORT void rabbitSendMessage(char* msg);
 /*
  * checks if a new message is available / returns 0 if not
  */
-EXTERN_DLL_EXPORT int rabbitGetMessage(char* msg);
+EXTERN_DLL_EXPORT int rabbitGetMessage(TDHCmd* msg);
 
 /*
  * returns the count of available messages
  */
 EXTERN_DLL_EXPORT int rabbitMessagesAvailable();
-
-
-
-/*
- *  old test functions
- */
-typedef struct {
-    int value;
-    char str[256];
-} MyType;
-
-EXTERN_DLL_EXPORT void getString(char* buf);
-
-EXTERN_DLL_EXPORT void getStruct(MyType* data);
-
 
 #endif //TESTLIB_LIBRARY_H

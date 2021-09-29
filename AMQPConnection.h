@@ -1,6 +1,7 @@
 #include <rabbitmq-c/amqp.h>
 #include <rabbitmq-c/tcp_socket.h>
 #include <thread>
+#include "library.h"
 
 #ifndef AMPQ_CONNECTION_h
 #define AMPQ_CONNECTION_h
@@ -50,7 +51,7 @@ public:
      * loads a message from the connection
      * returns true if succesfully loaded
      */
-    bool getMessage(TDHTransferHeader* msg);
+    bool getMessage(TDHCmd* msg);
 
     /*
      * returns the amount of available messages

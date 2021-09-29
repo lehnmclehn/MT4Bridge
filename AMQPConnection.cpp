@@ -3,6 +3,8 @@
 #include <queue>
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
+#include <json/json.h>
 
 int countOfMessages = 0;
 std::queue<std::string> messageQueue;
@@ -79,7 +81,7 @@ void AMQPConnection::deinit() {
 void receiveLoop(
         amqp_connection_state_t conn,
         const char *queue
-        ) {
+) {
     amqp_basic_consume(conn, 1, amqp_cstring_bytes(queue), amqp_empty_bytes,
                        0, 1, 0, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(conn), "Consuming");
@@ -110,7 +112,7 @@ void receiveLoop(
         countOfMessages++;
 
         char buf[1024];
-        strncpy(buf, (const char*)envelope.message.body.bytes, envelope.message.body.len);
+        strncpy(buf, (const char *) envelope.message.body.bytes, envelope.message.body.len);
         buf[envelope.message.body.len] = 0;
 
         std::string el = buf;
@@ -122,16 +124,24 @@ void receiveLoop(
     }
 }
 
-bool AMQPConnection::getMessage(TDHTransferHeader *msg) {
+void jsonParseCmd(std::string json, TDHCmd *cmd) {
+    std::stringstream jsonText(json);
+    Json::Value root;
+    jsonText >> root;
+
+    strcpy(cmd->action, root.get("action", "?").asCString());
+    strcpy(cmd->tradeable, root.get("tradeable", "?").asCString());
+    strcpy(cmd->msg, root.get("msg", "?").asCString());
+}
+
+bool AMQPConnection::getMessage(TDHCmd *cmd) {
 
     if (messageQueue.empty()) return false;
 
     std::string el = messageQueue.front();
     messageQueue.pop();
 
-    msg->version = 1;
-    msg->type = 0;
-    strcpy(msg->msg, el.c_str());
+    jsonParseCmd(el, cmd);
 
     return true;
 }

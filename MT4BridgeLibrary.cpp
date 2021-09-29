@@ -1,7 +1,7 @@
+#include <iostream>
+#include <json/json.h>
 #include "library.h"
-
 #include "AMQPConnection.h"
-#include "string.h"
 
 AMQPConnection conn;
 
@@ -25,13 +25,11 @@ EXTERN_DLL_EXPORT void rabbitSendMessage(char *msg) {
     conn.send(header);
 }
 
-EXTERN_DLL_EXPORT int rabbitGetMessage(char *msg) {
+EXTERN_DLL_EXPORT int rabbitGetMessage(TDHCmd *cmd) {
 
     int count = conn.messagesAvailable();
     if (count > 0) {
-        TDHTransferHeader header;
-        conn.getMessage(&header);
-        strcpy(msg,header.msg);
+        conn.getMessage(cmd);
         return 1;
     } else {
         return 0;
@@ -42,18 +40,4 @@ EXTERN_DLL_EXPORT int rabbitMessagesAvailable() {
     int count = conn.messagesAvailable();
     return count;
 }
-
-
-/* ******************
- * DEPRECATED
- */
-EXTERN_DLL_EXPORT void getString(char *buf) {
-    strcpy(buf, "Hello, World!");
-}
-
-EXTERN_DLL_EXPORT void getStruct(MyType *data) {
-    data->value = 99;
-    strcpy(data->str, "It worked!");
-}
-
 
