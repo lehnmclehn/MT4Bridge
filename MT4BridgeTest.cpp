@@ -22,7 +22,7 @@ void runServer() {
                 printf("rabbitCheckForMessage: failure --> result = 0\n");
                 // rabbitSendMessage("Message ack: failure");
             } else {
-                printf("rabbitCheckForMessage: result = %u --> Action=%s | Tradeable=%s | msg=%s\n", result, cmd.action,
+                printf("rabbitCheckForMessage: result = %u --> Time=%u | Action=%s | Tradeable=%s | msg=%s\n", result, cmd.time, cmd.action,
                        cmd.tradeable, cmd.msg);
                 // rabbitSendMessage("Message ack: correct");
             }

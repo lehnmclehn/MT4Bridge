@@ -2,7 +2,7 @@
 #include <thread>
 #include <queue>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <sstream>
 #include <json/json.h>
 
@@ -129,6 +129,8 @@ void jsonParseCmd(std::string json, TDHCmd *cmd) {
     Json::Value root;
     jsonText >> root;
 
+    std::string::size_type sz;
+    cmd->time = root.get("time", "0").asInt();
     strcpy(cmd->action, root.get("action", "?").asCString());
     strcpy(cmd->tradeable, root.get("tradeable", "?").asCString());
     strcpy(cmd->msg, root.get("msg", "?").asCString());
