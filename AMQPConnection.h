@@ -45,7 +45,7 @@ public:
     /*
      * send a message to a server
      */
-    void send(const TDHTransferHeader msg);
+    void send(TDHBar* bar);
 
     /*
      * loads a message from the connection

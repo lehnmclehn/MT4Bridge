@@ -53,17 +53,28 @@ void AMQPConnection::init() {
 
 }
 
-void AMQPConnection::send(const TDHTransferHeader msg) {
-    {
-        amqp_basic_properties_t props;
-        props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
-        props.content_type = amqp_cstring_bytes("text/plain");
-        props.delivery_mode = 2; /* persistent delivery mode */
-        die_on_error(amqp_basic_publish(conn, 1, amqp_cstring_bytes(exchange),
-                                        amqp_cstring_bytes(bindingkey), 0, 0,
-                                        &props, amqp_cstring_bytes(msg.msg)),
-                     "Publishing");
-    }
+void AMQPConnection::send(TDHBar *bar) {
+    Json::Value root;
+    root["symbol"] = bar->symbol;
+    root["time"] = std::to_string(bar->time);
+    root["period"] = std::to_string(bar->period);
+    root["open"] = bar->open;
+    root["high"] = bar->high;
+    root["low"] = bar->low;
+    root["close"] = bar->close;
+
+    std::stringstream msg;
+    msg << root;
+
+// If you like the defau
+    amqp_basic_properties_t props;
+    props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
+    props.content_type = amqp_cstring_bytes("text/plain");
+    props.delivery_mode = 2; /* persistent delivery mode */
+    die_on_error(amqp_basic_publish(conn, 1, amqp_cstring_bytes(exchange),
+                                    amqp_cstring_bytes(bindingkey), 0, 0,
+                                    &props, amqp_cstring_bytes(msg.str().c_str())),
+                 "Publishing");
 }
 
 void AMQPConnection::deinit() {

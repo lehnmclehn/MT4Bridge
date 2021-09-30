@@ -4,12 +4,25 @@
 #include "library.h"
 #include "json/json.h"
 
+void sendTestMessage() {
+    TDHBar bar;
+
+    strcpy(bar.symbol, "TEST");
+    bar.period = 99;
+    bar.open = 99.9;
+    bar.high = 99.9;
+    bar.low = 99.9;
+    bar.close = 99.9;
+    bar.time = 1234567;
+
+    rabbitSendMessage(&bar);
+}
 
 void runServer() {
     printf("Starting Test ...");
 
     rabbitInit();
-    // rabbitSendMessage("Testprogram ist up and running ...");
+    sendTestMessage();
 
     while (true) {
         int count = rabbitMessagesAvailable();
@@ -22,7 +35,8 @@ void runServer() {
                 printf("rabbitCheckForMessage: failure --> result = 0\n");
                 // rabbitSendMessage("Message ack: failure");
             } else {
-                printf("rabbitCheckForMessage: result = %u --> Time=%u | Action=%s | Tradeable=%s | msg=%s\n", result, cmd.time, cmd.action,
+                printf("rabbitCheckForMessage: result = %u --> Time=%u | Action=%s | Tradeable=%s | msg=%s\n", result,
+                       cmd.time, cmd.action,
                        cmd.tradeable, cmd.msg);
                 // rabbitSendMessage("Message ack: correct");
             }

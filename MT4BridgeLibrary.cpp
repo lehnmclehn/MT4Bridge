@@ -16,13 +16,8 @@ EXTERN_DLL_EXPORT void rabbitDeinit() {
     conn.deinit();
 }
 
-EXTERN_DLL_EXPORT void rabbitSendMessage(char *msg) {
-    TDHTransferHeader header;
-    header.version = 1;
-    header.type = 0;
-    strcpy(header.msg, msg);
-
-    conn.send(header);
+EXTERN_DLL_EXPORT void rabbitSendMessage(TDHBar* bar) {
+    conn.send(bar);
 }
 
 EXTERN_DLL_EXPORT int rabbitGetMessage(TDHCmd *cmd) {

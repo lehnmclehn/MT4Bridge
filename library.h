@@ -16,6 +16,20 @@ typedef struct {
 
 
 /*
+ *  Bar structure sent from MT4 --> TDH
+ */
+typedef struct {
+    long time;
+    char symbol[32];
+    long period;
+    float high;
+    float open;
+    float low;
+    float close;
+} TDHBar;
+
+
+/*
  * initializes the AMQP Library
  */
 EXTERN_DLL_EXPORT void rabbitInit();
@@ -28,7 +42,7 @@ EXTERN_DLL_EXPORT void rabbitDeinit();
 /*
  * sends a text message to rabbit MQ
  */
-EXTERN_DLL_EXPORT void rabbitSendMessage(char* msg);
+EXTERN_DLL_EXPORT void rabbitSendMessage(TDHBar* bar);
 
 /*
  * checks if a new message is available / returns 0 if not
