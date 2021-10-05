@@ -5,8 +5,9 @@
 #include <string>
 #include <sstream>
 #include <json/json.h>
+#include <iomanip>
+#include <string>
 
-int countOfMessages = 0;
 std::queue<std::string> messageQueue;
 
 void die_on_amqp_error(amqp_rpc_reply_t reply, const char *s) {
@@ -53,20 +54,26 @@ void AMQPConnection::init() {
 
 }
 
+std::string convertToPrecision(float value, int precision) {
+    std::ostringstream ss;
+    ss << std::setprecision(precision) << ::std::fixed << value;
+    return ss.str();
+}
+
 void AMQPConnection::send(TDHBar *bar) {
     Json::Value root;
-    root["symbol"] = bar->symbol;
-    root["time"] = std::to_string(bar->time);
-    root["period"] = std::to_string(bar->period);
-    root["open"] = bar->open;
-    root["high"] = bar->high;
-    root["low"] = bar->low;
-    root["close"] = bar->close;
+    root["symbol"]= bar->symbol;
+    root["time"]  = std::to_string(bar->time);
+    root["period"]= std::to_string(bar->period);
+    root["open"] = convertToPrecision( bar->open ,bar->digits);
+    root["high"]  = convertToPrecision( bar->high ,bar->digits);
+    root["low"]   = convertToPrecision( bar->low ,bar->digits);
+    root["close"] = convertToPrecision( bar->close ,bar->digits);
 
     std::stringstream msg;
     msg << root;
 
-// If you like the defau
+    // If you like the default
     amqp_basic_properties_t props;
     props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
     props.content_type = amqp_cstring_bytes("text/plain");
@@ -107,20 +114,6 @@ void receiveLoop(
         if (AMQP_RESPONSE_NORMAL != res.reply_type) {
             break;
         }
-/*
-        printf("Delivery %u, exchange %.*s routingkey %.*s\n",
-               (unsigned) envelope.delivery_tag, (int) envelope.exchange.len,
-               (char *) envelope.exchange.bytes, (int) envelope.routing_key.len,
-               (char *) envelope.routing_key.bytes);
-
-        if (envelope.message.properties._flags & AMQP_BASIC_CONTENT_TYPE_FLAG) {
-            printf("Content-type: %.*s\n",
-                   (int) envelope.message.properties.content_type.len,
-                   (char *) envelope.message.properties.content_type.bytes);
-        } */
-
-        // TODO: manually limited
-        countOfMessages++;
 
         char buf[1024];
         strncpy(buf, (const char *) envelope.message.body.bytes, envelope.message.body.len);

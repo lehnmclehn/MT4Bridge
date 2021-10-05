@@ -22,6 +22,7 @@ typedef struct {
     long time;
     char symbol[32];
     long period;
+    long digits;
     float high;
     float open;
     float low;

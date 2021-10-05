@@ -9,6 +9,7 @@ void sendTestMessage() {
 
     strcpy(bar.symbol, "TEST");
     bar.period = 99;
+    bar.digits = 3;
     bar.open = 99.9;
     bar.high = 99.9;
     bar.low = 99.9;
@@ -42,7 +43,7 @@ void runServer() {
             }
         }
 
-        sleep(30);
+        sleep(1);
     }
 
     rabbitDeinit();
