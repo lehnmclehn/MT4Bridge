@@ -26,8 +26,11 @@ private:
     // empty exchange means the AMQP default exchange (bindingKey ist the corresponding queue)
     const char *exchange = "";
 
-    // defaults to the sending queue
-    const char *bindingkey = "BAR";
+    // queue for sending bars
+    const char *bindingKeyBar = "BAR";
+
+    // queue for sending responses
+    const char *bindingKeyCmdResponse = "CMD_RESPONSE";
 
     // queue where we get our commands
     const char *listenQueue = "CMD";
@@ -43,9 +46,14 @@ public:
     void init();
 
     /*
-     * send a message to a server
+     * send a bar to the server
      */
     void send(TDHBar* bar);
+
+    /*
+     * send a response command to the server
+     */
+    void send(TDHCmdResponse* data);
 
     /*
      * loads a message from the connection

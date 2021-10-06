@@ -16,7 +16,7 @@ void sendTestMessage() {
     bar.close = 99.9;
     bar.time = 1234567;
 
-    rabbitSendMessage(&bar);
+    rabbitSendBar(&bar);
 }
 
 void runServer() {

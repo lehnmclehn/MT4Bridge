@@ -16,7 +16,7 @@ EXTERN_DLL_EXPORT void rabbitDeinit() {
     conn.deinit();
 }
 
-EXTERN_DLL_EXPORT void rabbitSendMessage(TDHBar* bar) {
+EXTERN_DLL_EXPORT void rabbitSendBar(TDHBar* bar) {
     conn.send(bar);
 }
 
@@ -29,6 +29,10 @@ EXTERN_DLL_EXPORT int rabbitGetMessage(TDHCmd *cmd) {
     } else {
         return 0;
     }
+}
+
+EXTERN_DLL_EXPORT void rabbitSendCmdResponse(TDHCmdResponse* response) {
+    conn.send(response);
 }
 
 EXTERN_DLL_EXPORT int rabbitMessagesAvailable() {

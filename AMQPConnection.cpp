@@ -79,7 +79,26 @@ void AMQPConnection::send(TDHBar *bar) {
     props.content_type = amqp_cstring_bytes("text/plain");
     props.delivery_mode = 2; /* persistent delivery mode */
     die_on_error(amqp_basic_publish(conn, 1, amqp_cstring_bytes(exchange),
-                                    amqp_cstring_bytes(bindingkey), 0, 0,
+                                    amqp_cstring_bytes(bindingKeyBar), 0, 0,
+                                    &props, amqp_cstring_bytes(msg.str().c_str())),
+                 "Publishing");
+}
+
+void AMQPConnection::send(TDHCmdResponse *data) {
+    Json::Value root;
+    root["id"]= data->id;
+    root["state"]  = data->state;
+
+    std::stringstream msg;
+    msg << root;
+
+    // If you like the default
+    amqp_basic_properties_t props;
+    props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
+    props.content_type = amqp_cstring_bytes("text/plain");
+    props.delivery_mode = 2; /* persistent delivery mode */
+    die_on_error(amqp_basic_publish(conn, 1, amqp_cstring_bytes(exchange),
+                                    amqp_cstring_bytes(bindingKeyCmdResponse), 0, 0,
                                     &props, amqp_cstring_bytes(msg.str().c_str())),
                  "Publishing");
 }
@@ -134,10 +153,10 @@ void jsonParseCmd(std::string json, TDHCmd *cmd) {
     jsonText >> root;
 
     std::string::size_type sz;
-    cmd->time = root.get("time", "0").asInt();
+    strcpy(cmd->id, root.get("id", "?").asCString());
     strcpy(cmd->action, root.get("action", "?").asCString());
-    strcpy(cmd->tradeable, root.get("tradeable", "?").asCString());
-    strcpy(cmd->msg, root.get("msg", "?").asCString());
+    strcpy(cmd->symbol, root.get("symbol", "?").asCString());
+    cmd->stopp = root.get("stopp", "0.0").asFloat();
 }
 
 bool AMQPConnection::getMessage(TDHCmd *cmd) {
