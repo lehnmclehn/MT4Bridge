@@ -11,6 +11,7 @@ typedef struct {
     char id[256];
     char action[32];
     char symbol[32];
+    float count;
     float stopp;
 } TDHCmd;
 
