@@ -156,9 +156,9 @@ void jsonParseCmd(std::string json, TDHCmd *cmd) {
     strcpy(cmd->id, root.get("id", "?").asCString());
     strcpy(cmd->action, root.get("action", "?").asCString());
     strcpy(cmd->symbol, root.get("symbol", "?").asCString());
-    cmd->count = root.get("count", "0.0").asFloat();
-    cmd->takeprofit = root.get("takeprofit", "0.0").asFloat();
-    cmd->stopp = root.get("stopp", "0.0").asFloat();
+    cmd->count = root.get("count", 0.0).asFloat();
+    cmd->takeprofit = root.get("takeprofit", 0.0).asFloat();
+    cmd->stopp = root.get("stopp", 0.0).asFloat();
 }
 
 bool AMQPConnection::getMessage(TDHCmd *cmd) {

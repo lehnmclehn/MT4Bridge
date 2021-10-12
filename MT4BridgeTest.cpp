@@ -25,9 +25,12 @@ void runServer() {
     rabbitInit();
     sendTestMessage();
 
+    int repeatCount = 0;
     while (true) {
         int count = rabbitMessagesAvailable();
-        printf("rabbitMessagesAvailable: %u\n", count);
+
+        if (repeatCount++ % 10 == 0 || count > 0 )
+            printf("rabbitMessagesAvailable: %u\n", count);
 
         if (count > 0) {
             TDHCmd cmd;
@@ -38,7 +41,7 @@ void runServer() {
             } else {
                 printf("rabbitCheckForMessage: result = %u --> Id=%s | Action=%s | Symbol=%s | Count=%02f| TakeProfit=%02f| Stopp=%02f\n", result,
                        cmd.id, cmd.action,
-                       cmd.symbol, cmd.takeprofit, cmd.stopp);
+                       cmd.symbol, cmd.count, cmd.takeprofit, cmd.stopp);
                 // rabbitSendMessage("Message ack: correct");
             }
         }
