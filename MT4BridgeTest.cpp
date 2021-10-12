@@ -36,9 +36,9 @@ void runServer() {
                 printf("rabbitCheckForMessage: failure --> result = 0\n");
                 // rabbitSendMessage("Message ack: failure");
             } else {
-                printf("rabbitCheckForMessage: result = %u --> Id=%s | Action=%s | Symbol=%s | Count=%02f| Stopp=%02f\n", result,
+                printf("rabbitCheckForMessage: result = %u --> Id=%s | Action=%s | Symbol=%s | Count=%02f| TakeProfit=%02f| Stopp=%02f\n", result,
                        cmd.id, cmd.action,
-                       cmd.symbol, cmd.stopp);
+                       cmd.symbol, cmd.takeprofit, cmd.stopp);
                 // rabbitSendMessage("Message ack: correct");
             }
         }

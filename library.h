@@ -12,6 +12,7 @@ typedef struct {
     char action[32];
     char symbol[32];
     float count;
+    float takeprofit;
     float stopp;
 } TDHCmd;
 
