@@ -29,7 +29,7 @@ void runServer() {
     while (true) {
         int count = rabbitMessagesAvailable();
 
-        if (repeatCount++ % 10 == 0 || count > 0 )
+        if (repeatCount++ % 10 == 0 || count > 0)
             printf("rabbitMessagesAvailable: %u\n", count);
 
         if (count > 0) {
@@ -39,9 +39,13 @@ void runServer() {
                 printf("rabbitCheckForMessage: failure --> result = 0\n");
                 // rabbitSendMessage("Message ack: failure");
             } else {
-                printf("rabbitCheckForMessage: result = %u --> Id=%s | Action=%s | Symbol=%s | Count=%02f| TakeProfit=%02f| Stopp=%02f\n", result,
+                printf("rabbitCheckForMessage: result = %u --> Id=%s\nAction=%s\nSymbol=%s\nDir=%c\n", result,
                        cmd.id, cmd.action,
-                       cmd.symbol, cmd.count, cmd.takeprofit, cmd.stopp);
+                       cmd.symbol, cmd.dir);
+
+                printf("Count=%02f\nTakeProfit=%02f\nStopp=%02f\n", cmd.count, cmd.takeprofit, cmd.stopp);
+                printf("EntryTime=%u\nEntryPrice=%02f\n", cmd.entrytime, cmd.entryprice);
+                printf("ExitTime=%u\nExitPrice=%02f\n", cmd.exittime, cmd.exitprice);
                 // rabbitSendMessage("Message ack: correct");
             }
         }

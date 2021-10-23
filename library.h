@@ -11,9 +11,19 @@ typedef struct {
     char id[256];
     char action[32];
     char symbol[32];
+    char dir;
+
+    // default trade commands
     float count;
     float takeprofit;
     float stopp;
+
+    // info commands to visualize trades
+    long  entrytime;
+    float entryprice;
+    long  exittime;
+    float exitprice;
+
 } TDHCmd;
 
 

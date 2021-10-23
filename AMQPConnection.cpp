@@ -6,7 +6,6 @@
 #include <sstream>
 #include <json/json.h>
 #include <iomanip>
-#include <string>
 
 std::queue<std::string> messageQueue;
 
@@ -156,9 +155,16 @@ void jsonParseCmd(std::string json, TDHCmd *cmd) {
     strcpy(cmd->id, root.get("id", "?").asCString());
     strcpy(cmd->action, root.get("action", "?").asCString());
     strcpy(cmd->symbol, root.get("symbol", "?").asCString());
+    cmd->dir = root.get("symbol", "L").asCString()[0];
+
     cmd->count = root.get("count", 0.0).asFloat();
     cmd->takeprofit = root.get("takeprofit", 0.0).asFloat();
     cmd->stopp = root.get("stopp", 0.0).asFloat();
+
+    cmd->entrytime = root.get("entrytime", 0.0).asInt();
+    cmd->entryprice = root.get("entryprice", 0.0).asFloat();
+    cmd->exittime = root.get("exittime", 0.0).asInt();
+    cmd->exitprice = root.get("exitprice", 0.0).asFloat();
 }
 
 bool AMQPConnection::getMessage(TDHCmd *cmd) {
