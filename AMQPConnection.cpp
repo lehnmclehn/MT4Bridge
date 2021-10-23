@@ -6,8 +6,11 @@
 #include <sstream>
 #include <json/json.h>
 #include <iomanip>
+#include <unistd.h>
 
 std::queue<std::string> messageQueue;
+
+bool  globalStop = false;
 
 void die_on_amqp_error(amqp_rpc_reply_t reply, const char *s) {
     if (reply.library_error != 0) {
@@ -31,6 +34,8 @@ void die(const char *s) {
 
 void AMQPConnection::init() {
     printf("Init function ...\n");
+
+    globalStop = false;
 
     conn = amqp_new_connection();
 
@@ -103,14 +108,8 @@ void AMQPConnection::send(TDHCmdResponse *data) {
 }
 
 void AMQPConnection::deinit() {
-    /* close channel + connection */
-    die_on_amqp_error(amqp_channel_close(conn, 1, AMQP_REPLY_SUCCESS),
-                      "Closing channel");
 
-    die_on_amqp_error(amqp_connection_close(conn, AMQP_REPLY_SUCCESS),
-                      "Closing connection");
-
-    amqp_destroy_connection(conn);
+    globalStop = true;
 }
 
 
@@ -122,28 +121,49 @@ void receiveLoop(
                        0, 1, 0, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(conn), "Consuming");
 
-    for (;;) {
+    while (!globalStop) {
         amqp_rpc_reply_t res;
         amqp_envelope_t envelope;
 
         amqp_maybe_release_buffers(conn);
 
-        res = amqp_consume_message(conn, &envelope, NULL, 0);
-        if (AMQP_RESPONSE_NORMAL != res.reply_type) {
-            break;
+        timeval timeout;
+        timeout.tv_sec = 3;
+        timeout.tv_usec = 0;
+
+        res = amqp_consume_message(conn, &envelope, &timeout, 0);
+
+/*
+        if (AMQP_RESPONSE_LIBRARY_EXCEPTION == res.reply_type) {
+            if (AMQP_STATUS_TIMEOUT == res.library_error) {
+                printf("library error --> das ist wirklich timeout \n");
+            }
+            printf("library error: %u --> %s\n", res.library_error, amqp_error_string(res.library_error));
+        }*/
+
+        if (AMQP_RESPONSE_NORMAL == res.reply_type) {
+            char buf[1024];
+            strncpy(buf, (const char *) envelope.message.body.bytes, envelope.message.body.len);
+            buf[envelope.message.body.len] = 0;
+
+            std::string el = buf;
+            messageQueue.push(el);
+            // printf("==== Message received ===\n%s\n", buf);
+            // amqp_dump(envelope.message.body.bytes, envelope.message.body.len);
+
+            amqp_destroy_envelope(&envelope);
         }
 
-        char buf[1024];
-        strncpy(buf, (const char *) envelope.message.body.bytes, envelope.message.body.len);
-        buf[envelope.message.body.len] = 0;
-
-        std::string el = buf;
-        messageQueue.push(el);
-        // printf("==== Message received ===\n%s\n", buf);
-        // amqp_dump(envelope.message.body.bytes, envelope.message.body.len);
-
-        amqp_destroy_envelope(&envelope);
     }
+
+    /* close channel + connection */
+    die_on_amqp_error(amqp_channel_close(conn, 1, AMQP_REPLY_SUCCESS),
+                      "Closing channel");
+
+    die_on_amqp_error(amqp_connection_close(conn, AMQP_REPLY_SUCCESS),
+                      "Closing connection");
+
+    amqp_destroy_connection(conn);
 }
 
 void jsonParseCmd(std::string json, TDHCmd *cmd) {
