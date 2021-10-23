@@ -39,7 +39,7 @@ void runServer() {
                 printf("rabbitCheckForMessage: failure --> result = 0\n");
                 // rabbitSendMessage("Message ack: failure");
             } else {
-                printf("rabbitCheckForMessage: result = %u --> Id=%s\nAction=%s\nSymbol=%s\nDir=%c\n", result,
+                printf("rabbitCheckForMessage: result = %u --> Id=%s\nAction=%s\nSymbol=%u\nDir=%u\n", result,
                        cmd.id, cmd.action,
                        cmd.symbol, cmd.dir);
 

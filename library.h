@@ -11,7 +11,7 @@ typedef struct {
     char id[256];
     char action[32];
     char symbol[32];
-    char dir;
+    long dir;
 
     // default trade commands
     float count;
