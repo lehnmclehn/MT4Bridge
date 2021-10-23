@@ -155,7 +155,7 @@ void jsonParseCmd(std::string json, TDHCmd *cmd) {
     strcpy(cmd->id, root.get("id", "?").asCString());
     strcpy(cmd->action, root.get("action", "?").asCString());
     strcpy(cmd->symbol, root.get("symbol", "?").asCString());
-    cmd->dir = (root.get("dir", 1).asCString()[0] == 'L') ? 1 : 0;
+    cmd->dir = (root.get("dir", "L").asCString()[0] == 'L') ? 1 : 0;
 
     cmd->count = root.get("count", 0.0).asFloat();
     cmd->takeprofit = root.get("takeprofit", 0.0).asFloat();
